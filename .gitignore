@@ -1,0 +1,6 @@
+.ipynb_checkpoints/
+*.jpg
+__pycache__/
+cifar10/
+own/
+logistic regression/
