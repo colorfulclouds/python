@@ -5,3 +5,4 @@ cifar10/
 own/
 logistic regression/
 MNIST/
+*.txt
