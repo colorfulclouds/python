@@ -66,12 +66,148 @@ s.add(key) #错误
 #即便使用其成员函数进行了修改 该函数也是\
 #返回一个修改后的新的变量 原变量不变化
 
+#help() 函数可以查看一个函数的用法
 
 
+def func_no_return():
+    a=2
+    b=2
+    
+    c=a+b
+
+#上面的函数没有return 但是有返回值为none
+
+#空函数
+def nop():
+    pass #占位符的作用
+
+#isinstance用来检查变量类型
+def my_abs(number):
+    if not isinstance(number , (int , float)):
+        raise TypeError('type error')
+    
+    if number>=0:
+        return number
+    else:
+        return -number
+    
+
+def return_multi():
+    a=5
+    b=4
+    
+    return a,b #实际返回一个tuple
+    
+
+#==========
+#函数参数 多
+
+#########
+#位置参数
+def square(x):
+    return x*x
+
+def add(x,y):
+    return x+y
+
+#########
+#默认参数
+def set_age(name , age=25):
+    print(name , age)
 
 
+#默认参数大坑展示
+def add_end(L=[]):
+    L.append('END')
+    
+    return L
+
+add_end() #output:['END']
+add_end() #output:['END','END']
+
+#因为默认参数L也是一个变量，它指向对象[]，每次调用该函数，如果改变了L的内容
+#则下次调用时，默认参数的内容就变了，不再是函数定义时的[]了
+#展示完毕
+
+#修改如下
+def add_end(L=None):
+    if L is None:
+        L = []
+        
+    L.append('END')
+    return L
+
+#因为str None是不可变类型 就不会被修改
+
+#########
+#可变参数 封装为tuple
+def sum(*number): #number前面一个* number就接收了一个tuple
+    x=0
+    
+    for n in number:
+        x=x+n
+    
+    return x
+
+sum(1,2,3,4)
+
+LL=[1,2,3]
+sum(LL[0],LL[1],LL[2]) #方式1
+sum(*LL) #方式2 作为可变参数的形式传进去
+
+   
+############
+#关键字参数 封装为dict
+
+def person(uid , name , **kw):
+    print(uid , name , kw)
+
+info={'color':'red' , 'like':'pingpang'}
+person(52 , 'feifei' , **info) #52 feifei {'color':'red' , 'like':'pingpang'}
 
 
+###############
+#命名关键字参数
+#需要人为地检查kw中有什么
+def person(uid , name , **kw):
+    if 'color' in kw:
+        pass
+    
+    if 'city' in kw:
+        pass
+    
+    pass
+#但是还是可以不受限制的传参数
+#命名关键字参数来来了
+#a>
+#如果函数定义中已经有了一个可变参数，后面跟着的命名关键字参数就不再需要一个特殊分隔符*了
+def person(uid , name , *args , color , like):
+    pass
+
+#必须传入参数名
+person(52 , 'feifei' , 'haha' , 'heihei' , color='red' , like='pingpang')
+
+#b>
+#命名关键字参数可以有默认值
+def person(uid , name , * , color='red' , like):
+    print(uid , name , color , like)
+
+person(52,'feifei' , like='pingpang')
+person(52,'feifei',color='deep_red' ,like='pingpang')
+
+#函数头部中 如果没有可变参数（*kg） 必须人为添加*符号
+
+############
+#参数组合
+#参数顺序为： 必选参数 默认参数 可变参数 命名关键字参数 关键字参数
+def person(uid , name ,age=52, *args , **kw):
+    pass
+
+def person(uid , name , age=52 , * , other , **kw ):
+    pass
+
+#递归函数
+#https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/001431756044276a15558a759ec43de8e30eb0ed169fb11000
 
 
 
