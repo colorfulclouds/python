@@ -8,3 +8,7 @@ MNIST/
 xgboost/
 *.txt
 .gitignore
+Keras-GAN/
+keras/
+models/
+tensorflow/
