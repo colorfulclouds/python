@@ -3,6 +3,7 @@
 Created on Wed Sep 26 08:50:52 2018
 
 @author: qq122
+Reference:https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000
 """
 
 tuple_instance=(1) #错误的写法 得到的是一个单纯的数字1 而不是tuple
@@ -207,7 +208,130 @@ def person(uid , name , age=52 , * , other , **kw ):
     pass
 
 #递归函数
-#https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/001431756044276a15558a759ec43de8e30eb0ed169fb11000
+def digui(number):
+    if number == 1:
+        return 1
+    
+    return digui(number-1)*number
 
 
+#尾递归 递归本身只占用一个栈帧
+#在函数返回的时候，调用自身本身，并且，return语句不能包含表达式
+def digui(number):
+    return real_digui(number , 1)
 
+def real_digui(number , product):
+    if number == 1:
+        return product
+    
+    return real_digui(number-1 , number*product)
+
+
+#tuple支持切片 结果还是tuple 依然是不可变的
+
+#判断是否为可迭代的
+from collections import Iterable
+isinstance([1,2,3] , Iterable) #判断list是否可迭代
+isinstance(342 , Iterable)
+    
+
+
+for i,value in enumerate(['a','b','c']):
+    print(i,value)
+#output:
+    #0 a
+    #1 b
+    #2 c
+
+
+#for循环支持同时应用两个变量
+for x ,y in [(2,3),(4,5),(2,2)]:
+    print(x,y)
+    
+
+###########
+#列表生成式
+[x*x for x in range(1,11)]
+#output:[1,4,9,16,25,36,49,64,81,100]
+
+[x*x for x in range(1,11) if x%2 == 0]
+
+[m+n for m in 'ABC' for n in 'XYZ']
+#output:['AX', 'AY', 'AZ', 'BX', 'BY', 'BZ', 'CX', 'CY', 'CZ']
+
+############      
+#生成器 generator
+#利用某种算法将列表元素推算出来
+#1>将列表生成式的中括号换为圆括号
+L=(x*x for x in range(10)) #L变为了generator
+next(L) #访问元素
+next(L) #访问元素
+
+#也可以使用for循环访问
+#因为generator是可迭代的
+for i in L:
+    print(i)
+
+
+#使用yield关键字将一个函数变为generator
+
+
+#函数是顺序执行，遇到return语句或者最后一行函数语句就返回。
+#而变成generator的函数，在每次调用next()的时候执行，
+#遇到yield语句返回，再次执行时从上次返回的yield语句处继续执行。
+def f():
+    for i in range(10):
+        yield i
+    
+for i in f():
+    print(i)
+
+
+def f_return():
+    for i in range(10):
+        yield i
+    
+    return 'sad' #for循环拿不到这个return值 需要异常StopIteration捕获才能拿到
+
+gene=f_return()
+while True:
+    try:
+        x = next(gene)
+        print(x)
+    except StopIteration as e:
+        print('return value is:' , e.value)
+        break
+
+from collections import Iterable #可迭代对象
+from collections import Iterator #迭代器
+
+#可以直接作用于for循环的对象统称为可迭代对象Iterable
+
+
+#生成器不但可以作用于for循环 还可以使用next函数不断调用来返回下一个值
+#可以被next调用并不断返回下一个值的对象称为迭代器 Iterator
+L=(x*x for x in range(10))
+isinstance(L , Iterator) #True
+isinstance('ddd' , Iterable) #True
+isinstance('ddd' , Iterator) #False
+
+          
+#可以使用iter函数将Iterable变为Iterator
+
+isinstance(iter('ddd') , Iterator) #True
+
+                
+#为什么list、dict、str等数据类型不是Iterator？
+
+#这是因为Python的Iterator对象表示的是一个数据流，
+#Iterator对象可以被next()函数调用并不断返回下一个数据，
+#直到没有数据时抛出StopIteration错误。可以把这个数据流看做是一个有序序列，
+#但我们却不能提前知道序列的长度，只能不断通过next()函数实现按需计算下一个数据，
+#所以Iterator的计算是惰性的，只有在需要返回下一个数据时它才会计算。
+
+#Iterator甚至可以表示一个无限大的数据流，例如全体自然数。而使用list是永远不可能存储全体自然数的。
+
+#迭代器详见下面的网址
+#https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/00143178254193589df9c612d2449618ea460e7a672a366000
+
+https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014317848428125ae6aa24068b4c50a7e71501ab275d52000
