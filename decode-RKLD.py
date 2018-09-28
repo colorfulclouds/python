@@ -334,4 +334,296 @@ isinstance(iter('ddd') , Iterator) #True
 #迭代器详见下面的网址
 #https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/00143178254193589df9c612d2449618ea460e7a672a366000
 
-https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014317848428125ae6aa24068b4c50a7e71501ab275d52000
+#函数式编程
+#函数可以作为参数 也可以作为返回值
+
+
+#高阶函数
+#函数名也就是一个变量
+#abs=10 abd函数名现在变成了一个整数
+#如果想让这种变化在别的python文件中也生效 使用下面代码
+import builtins
+builtins.abs = 10
+
+#也可以将函数作为参数传给另一个函数
+def my_f(number):
+    return number+2
+
+def f(x,y,h):
+    return h(x)+h(y)
+
+f(2,3,my_f)
+
+#map-reduce
+#map函数接收两个参数 函数 和 Iterable类型的变量
+#将结果作为新的Iterator返回
+
+def square(number):
+    return number*number
+
+li = [1,2,3,4,5,6,7,8,9]
+
+r_generator_iterator = map(square , li)
+
+for r in r_generator_iterator:
+    print(r)
+    
+
+
+#reduce函数的参数和map相同 但是reduce的第一个参数的函数有一个要求：这个函数必须有两个参数
+#reduce函数的作用将结果和序列的下一个元素做累计运算
+def add(x,y):
+    return x+y
+
+from functools import reduce
+reduce(add , [1,2,3,4]) #返回10
+
+
+#filter函数 参数与map类似
+#作为filter第一个参数的函数的返回值是Boolean 以此来决定是保留还是丢弃该元素
+#filter函数的返回值类型是Iterator
+#函数的作用是进行元素过滤 将满足第一个参数对应函数的元素保留下来
+def is_odd(number):
+    return number%2 == 1 #余数为1 表明是奇数
+    
+lo=[1,2,3,4,5,6,7,8,9,10]
+r_generator_iterator = filter(is_odd , lo)
+
+for i in r_generator_iterator:
+    print(i) #1 3 5 7 9
+
+
+#排序算法
+#内置的sorted
+
+sorted([2,3,4,1,2,-5,6,-5]) #默认是升序排序
+
+#使用绝对值函数作用后 再进行排序
+sorted([2,3,4,1,2,-5,6,-5] ,   key=abs)
+
+
+#sorted对字符串排序时 是按照ascii升序进行排序
+
+
+#函数作为返回值
+def lazy_sum(*args):
+    def sum():
+        ax=0
+        
+        for i in args:
+            ax=ax+i
+        
+        return ax
+    
+    return sum
+
+#内部函数可以引用外部函数lazy_sum的参数和局部变量
+#当lazy_sum返回函数sum时，相关参数和变量都保存在返回的函数中
+#上述即“闭包”
+
+f=lazy_sum(1,2,3,4,5) #返回一个函数
+f() #这时候才是真正的计算结果
+
+f1 = lazy_sum(1,2,3,4,5)
+f2 = lazy_sum(1,2,3,4,5)
+
+f1 == f2 #false
+
+def count():
+    fs = []
+    for i in range(1, 4):
+        def f():
+             return i*i
+        fs.append(f)
+    return fs
+
+f1, f2, f3 = count()
+
+f1() #9
+f2() #9
+f3() #9
+#全部都是9！原因就在于返回的函数引用了变量i，
+#但它并非立刻执行。等到3个函数都返回时，
+#它们所引用的变量i已经变成了3，因此最终结果为9。
+  
+#使用闭包时 返回的函数不要引用任何循环变量 或者后续会发生变化的变量
+ 
+#上面出现的情况 可以像下面这样写
+def count():
+    def f(j):
+        def g():
+            return j*j
+        
+        return g
+    
+    fs=[]
+    
+    for i in range(1,4):
+        fs.append(f(i))
+        
+    return fs
+
+f1, f2, f3 = count()
+
+f1() #1
+f2() #4
+f3() #9
+
+#闭包详细见下地址
+#https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/001431835236741e42daf5af6514f1a8917b8aaadff31bf000
+ 
+ 
+#匿名函数
+#lambda 用来制造匿名函数
+#匿名函数有一个限制 只有一个表达式 不写return 返回值就是表达式的结果 
+#不必担心函数名冲突
+#可以将其赋值给另一个变量 再利用变量来调用函数
+
+map(lambda x: x*x , [1,2,3,4])
+
+square = lambda x: x*x
+square(2)
+
+def func_buildin_func(x,y):
+    return lambda: x*x+y*y
+ 
+ 
+#装饰器
+#https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014318435599930270c0381a3b44db991cd6d858064ac0000
+
+def function():
+    print(52)
+
+function.__name__ #返回函数的名字
+
+#在代码运行期间动态增加功能的方式 称之为 装饰器
+#装饰器 decorator是一个返回函数的高阶函数
+
+#定义一个打印日志的decorator
+def log(func):
+    def wrapper(*args , **kw):
+        print('call %s()' % func.__name__)
+        
+        return func(*args , **kw)
+    
+    return wrapper
+
+#上面的log函数 是一个decorator  接收一个函数作为参数 并返回一个函数
+#使用python @符号语法
+@log
+def function():
+    print(52)
+
+function()
+#output:
+    #call function()
+    #52
+
+
+#放了一个@log 相当于执行了function=log(function)
+'''
+由于log()是一个decorator，返回一个函数，
+所以，原来的function()函数仍然存在，
+只是现在同名的function变量指向了新的函数，
+于是调用function()将执行新函数，即在log()函数中返回的wrapper()函数。
+
+wrapper()函数的参数定义是(*args, **kw)，
+因此，wrapper()函数可以接受任意参数的调用。
+在wrapper()函数内，首先打印日志，再紧接着调用原始函数
+'''
+
+#decorator自身也可以有参数传入 此时需要一个返回decorator的高阶函数
+def log(text): #这里的传入参数为text
+    def decorator(func):
+        def wrapper(*args , **kw):
+            print('%s %s()' % (text , func.__name__))
+            
+            return func(*args , **kw)
+        
+        return wrapper
+    
+    return decorator
+
+@log('feifei')
+def function():
+    print(52)
+
+function()  
+#output:
+    #feifei function()
+    #52
+
+#执行实质为log('feifei')(function)
+#首先执行log('execute')，返回的是decorator函数，
+#再调用返回的函数，参数是function函数，返回值最终是wrapper函数。
+
+
+#上面的两种嵌套 都将wrapper赋给了function函数
+#所以function.__name__ = wrapper 而不是function
+
+#可以人为地写wrapper.__name__ = function.__name__
+
+
+#python内置了
+import functools
+
+def log(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kw):
+        print('call %s()' % func.__name__)
+        
+        return func(*args , **kw)
+    
+    return wrapper
+
+
+def log(text): #这里的传入参数为text
+    def decorator(func):
+        @functools.wraps
+        def wrapper(*args , **kw):
+            print('%s %s()' % (text , func.__name__))
+            
+            return func(*args , **kw)
+        
+        return wrapper
+    
+    return decorator
+
+
+#上面即可保证由wrapper赋给function函数之后
+#function.__name__ = function
+
+
+
+#偏函数
+#见
+#https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/00143184474383175eeea92a8b0439fab7b392a8a32f8fa000
+
+int('123') #将字符串的‘123’变为int类型
+
+int('123' , base=8) #base为转换进制
+
+int('10101011' , base=2) #二进制转换
+
+#如果频繁使用2进制转换的话 不妨单独写一个函数 专门用来二进制转换
+
+import functools
+
+int2 = functools.partial(int , base=2) #int2函数就变成了专门做二进制转换的函数了
+
+#上面写法相当于
+kw = {'base':2}
+int('1001010',**kw)
+
+                    
+#另一个例子
+max2=functools.partial(max , 10)
+
+max2(5,6,7)
+#相当于
+args=(10,5,6,7)
+max(*args)
+
+#到
+https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014318447437605e90206e261744c08630a836851f5183000
+
