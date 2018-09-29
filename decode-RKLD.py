@@ -1,4 +1,12 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3  #表示有这个解释器进行执行
+# -*- coding: utf-8 -*- #该文件的编码格式
+
+'a decoding and postview python file' #任何模块代码的第一个字符串都被视为模块的文档注释
+
+__author__ = 'me' #文件的作者姓名
+
+#上面几行为python的标准编写格式
+
 """
 Created on Wed Sep 26 08:50:52 2018
 
@@ -624,6 +632,201 @@ max2(5,6,7)
 args=(10,5,6,7)
 max(*args)
 
-#到
-https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014318447437605e90206e261744c08630a836851f5183000
+#模块篇章
+#python防止模块的名字相同 引入了按目录来组织模块的方法 称为 包 package
+#包 本质就是一个目录 这个目录里面放有一些python 模块py文件
+#包名也不能和别的包名冲突
+
+#包 目录下必须包含 __init__.py文件 可以是一个空文件
+
+#引用方式 包名.模块名
+
+import sys
+sys.argv #这个成员变量 用list存储了命令行的所有参数
+#这个变量至少有一个元素 因为一第一个参数永远是该python文件
+
+#在模块文件一般有下面代码行
+if __name__ == '__main__':
+    #do something
+
+#在命令行运行模块python文件时 
+#python解释器会将python模块文件的特殊变量__name__置为__main__
+#而在其他地方导入模块文件时 if判断就会失败
+
+#下面两个规则只是针对python模块而言的
+#__xxx__ 前后两个下划线的为 特殊变量 避免这样的命名
+#_xxx 前面一个下划线 为私有的 不应该直接引用
+
+sys.path #python在这些路径下搜索模块文件
+#可以自行修改python的模块搜索路径
+#1> sys.path.append('self path') #运行时修改 运行结束后失效
+#2> 修改环境变量 PYTHONPATH #只需要添加自己的路径即可 python自身的搜索路径不受影响
+
+
+
+#class 面向对象 OOP
+
+class Student(object):
+    pass
+
+feifei = Student()
+feifei.age = 23 #可以自由地给变量绑定属性
+
+class Student(object):
+    def __init__(self , name , age):
+        self.name = name
+        self.age = age
+
+
+#上面的类定义方法 其成员变量是public 外部还是可以访问
+class Student(object):
+    def __init__(self , name , age):
+        self.__name = name
+        self.__age = age
+
+    def get_name(self):
+        return self.__name
+    
+    def get_age(self):
+        return self.__age
+    
+    def set_name(self , new_name):
+        self.__name = new_name
+    
+    def set_age(self , new_age):
+        pass
+    
+    
+#变量前加两个下划线 就变成了私有变量 代码更加健壮
+#增加get set方法访问私有变量
+
+
+
+#__xxx__ 前后两个下划线的这种变量是特殊变量 特殊变量是可以直接访问的 它不是私有变量
+#_xxx 前面只有一个下划线的变量 还是可以直接访问的 但是约定俗成 “可以被访问 但视为私有变量 不要随意访问”
+
+#__xxx 前面两个下划线的变量实质是python解释器将其进行了修改为 _类名__xxx
+#所以仍然可以通过 _类名__xxx进行访问
+
+'''
+>>> bart = Student('Bart Simpson', 59)
+>>> bart.get_name()
+'Bart Simpson'
+>>> bart.__name = 'New Name' # 设置__name变量！
+>>> bart.__name
+'New Name'
+
+#表面上看，外部代码“成功”地设置了__name变量，
+#但实际上这个__name变量和class内部的__name变量不是一个变量！
+#内部的__name变量已经被Python解释器自动改成了_Student__name，
+#而外部代码给bart新增了一个__name变量。不信试试
+>>> bart.get_name() # get_name()内部返回self.__name
+'Bart Simpson'
+'''
+
+
+#继承与多态
+class Animal(object):
+    def run(self):
+        print('running')
+
+class Cat(Animal):
+    def run(self):
+        print('cat running')
+    
+class Dog(Animal):
+    def run(self):
+        print('dog running')
+
+
+mi = Cat()
+mi.run() #Cat实例中的run方法会将Animal中的run方法覆盖掉 即多态
+
+isinstance(mi , Animal) #True
+isinstance(mi , Cat) #True
+#mi既是Animal类类型 又是Cat类类型
+
+#多态的演示见下地址
+#https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/001431865288798deef438d865e4c2985acff7e9fad15e3000
+#动态语言的鸭子类型 见上地址
+
+
+import types
+
+def function():
+    pass
+
+type(function) == types.FunctionType #True
+
+type(abs) == types.BuiltinFunctionType #True
+
+type(lambda x: x) == types.LambdaType #True
+
+type((x for x in range(10))) == types.GeneratorType
+    
+
+#object>Animal>Dog
+d=Dog()
+
+type(d) #Dog类类型
+
+isinstance(d , Dog) #True
+isinstance(d , Animal) #True
+
+
+#判断[1,2,3]是否是list或是tuple
+isinstance([1,2,3] , (list , tuple)) #True
+
+
+#dir函数返回一个对象的所有属性和方法
+dir('ABC')
+
+#__xxx__ 这种名字的属性和方法是有特殊用途的
+#__len__ 方法返回长度
+#使用len函数试图获取对象长度的时候 实际在len函数内部 自动去调用__len__方法
+
+len('ABC')
+#上下两种写法是一样的
+'ABC'.__len__()
+
+
+
+#如果想让len函数能够作用自己写的类 就在类中实现__len__方法即可
+class Dog(Animal):
+    
+    def __len__(self):
+        return 52
+    
+
+dog = Dog()
+len(dog) #返回52
+
+
+getattr() #获取对象属性
+setattr() #设置对象属性
+hasattr() #判断对象是否有指定的属性
+
+
+#正确的一个写法示例
+def readImage(fp): #从fp文件流中读取图像
+    if hasattr(fp , 'read'): #先判断是否有这个属性 然后再决定能否调用
+        return readData(fp)
+    
+    return None
+
+
+#here
+https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014319117128404c7dd0cf0e3c4d88acc8fe4d2c163625000
+
+
+
+
+
+
+
+
+
+
+
+
 
