@@ -815,18 +815,128 @@ def readImage(fp): #从fp文件流中读取图像
     return None
 
 
-#here
-https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014319117128404c7dd0cf0e3c4d88acc8fe4d2c163625000
+#属性和类属性
+class Student(object):
+    name='feifei'
+    
+    def __init__(self):
+        pass
+    
+
+print(Student.name) #'feifei'
+
+s = Student()
+print(s.name) #'feifei'
+
+s.name='aaa'
+print(s.name) #'aaa' 将类属性屏蔽掉了 
+
+print(Student.name) #'feifei' 实例属性不影响类属性
+
+#类属性由所有的类实例共享
+
+#面向对象高级编程
+
+#对一个类实例可以绑定属性和方法
+#但是类的另一个实例不起作用
+class Student(object):
+    pass
+
+s = Student()
+s.name = 'feifei'
+print(s.name) #'feifei'
+
+#定义一个函数作为一个实例的方法
+def set_age(self , age):
+    self.age = age
+     
+from types import MethodType
+
+s.set_age = MethodType(set_age , s) #给实例绑定方法
+s.set_age(52)
+print(s.age) #52
 
 
+#如果需要给所有实例绑定属性和方法 可以给class绑定方法 那么这个class的所有实例都能使用
+def set_score(self , score):
+    self.score = score
 
 
+Student.set_score = set_score
+
+s1 = Student()
+s2 = Student()
+
+s1.set_score(52)
+s2.set_score(52)
 
 
+#限制实例的属性 只允许对类的实例添加指定的属性
+class Student(object):
+    __slots__ = ('name' , 'age') #只能添加name和age属性
+
+    def __init__(self):
+        pass
+    
+
+s = Student()
+s.name='feifei'
+s.age = 52
+s.score=100 #error 不能绑定 __slots__没有指定
+
+#__slots__中的指定的属性只对当前类实例起作用 子类不起作用
+class sub_Student(Student):
+    pass
+
+sub_s = sub_Student()
+sub_s.score = 100 #正常 没有错误
+
+#除非在子类中也定义__slots__ 这样，子类实例允许定义的属性就是自身的__slots__加上父类的__slots__
 
 
+#python内置的@property装饰器负责把一个方法变成属性调用
+
+class Student(object):
+    #添加@property就将getter方法变成了属性
+    @property
+    def score(self):
+        return self._score
+    
+    #@property自身创建另一个装饰器@score.setter 负责将setter方法变成属性赋值
+    @score.setter
+    def score(self , value):
+        if not isinstance(value , int):
+            raise ValueError('score must be an integer')
+        if value<0 or value>100:
+            raise ValueError('must between 0-100')
+
+        self._score = value
 
 
+s = Student()
+s.score = 52 #s.set_score(52)方法
+print(s.score) #s.get_score()方法
 
 
+class Student(object):
+    @property
+    def birth():
+        return self._birth
+    
+    @birth.setter
+    def birth(self , value):
+        self._birth = value
+ 
+    #age只是一个可读属性       
+    @property
+    def age(self):
+        return 2015-self._birth
+    
+    
+     
+     
+     
+     
+     
+     
 
