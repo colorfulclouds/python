@@ -933,10 +933,48 @@ class Student(object):
         return 2015-self._birth
     
     
+#继承 python有单继承与多继承
+class Animal(object):
+    pass
+
+class Mammal(object):
+    pass
+
+class Swimmed(object):
+    pass
+
+#下面这种设计称为MixIn
+class Dog(Animal , Mammal , Swimmed):
+    pass
+
+class MammalMixIn(object):
+    pass
+
+class SwimmedMixIn(object):
+    pass
+
+#故可以给类名添加MixIn
+class Dog(Animal , MammalMixIn , SwimmedMixIn):
+    pass
      
+#定制类     
+https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014319098638265527beb24f7840aa97de564ccc7f20f6000  
+class Student(object):
+    def __init__(self , name):
+        self.name = name
+        
+print(Student('feifei')) #打印的是一个地址信息
+
+class Student(object):
+    
      
-     
-     
-     
+
+
+
+
+
+
+
+
      
 
