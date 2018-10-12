@@ -1107,6 +1107,98 @@ class Student(object):
 print(s.score)
 s.age()
 
+#让s调用s.abc s.xyz这种在__getattr__中不存在的就会返回none
+#python函数不写return就会返回none
+#所以需要抛出错误
+
+class Student(object):
+    def __getattr__(self , attr):
+        if attr == 'score':
+            return 99
+        
+        if attr == 'age':
+            return lambda: 25
+
+        raise AttributeError('\'Student\' object has no attribute \'%s\'' % attr)
+
+
+#使用实例名进行调用
+class Student(object):
+    def __init__(self , name):
+        self.name = name
+        
+    def __call__(self):
+        print('feifei')
+        
+s=Student()
+s() #这里调用得到是__call__方法
+
+ 
+#模糊了对象与函数的界限
+#有时候需要判断一个对象是否能够被调用
+#能够被调用的对象就是一个Callable对象 例如带有__call__方法的类实例
+#使用callable进行判断
+callable(Student())
+callable(max)
+callable('feifei')
+ 
+ 
+#枚举类
+from enum import Enum
+Month = Enum('Month' , ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+#自动赋值 默认从1开始计数
+Month.Jan #引用常量
+
+for name , member in Month.__members__.items():
+    print(name , member , member.value)
+#Jan Month.Jan 1
+#Feb Month.Feb 2
+#Mar Month.Mar 3
+#......
+
+#通过继承的手段派生自定义类
+from eunm import Enum , unique
+
+@unique #检查保证没有重复值
+class Weekday(Enum):
+    Sun = 0 # Sun的value被设定为0
+    Mon = 1
+    Tue = 2
+    Wed = 3
+    Thu = 4
+    Fri = 5
+    Sat = 6
+
+
+#元类
+class Hello(object):
+    def hello(self , name='world'):
+        print('hello' , name)
+    
+type(Hello) #输出为class 'type'
+#Hello的类型是类 类型 就好比C语言中的struct union一样
+#先定义类类型 在定义变量
+
+h = Hello()
+type(h) #类型是Hello类型
+
+
+#type函数可以返回对象的类型 也可以创建出新的类型
+
+def fn(self , name='world'):
+    print('hello' , name)
+
+#下面就创建了一个类类型
+Hello=type('Hello' , (object,), dict(hello=fn))
+
+#使用type函数创建类类型 需要3个参数
+#class名称 继承的父类集合（只有一个父类 注意tuple单元素写法） class方法名与函数绑定
+
+#python在遇到class定义时 只是检查语法后 就去调用type函数创建类 类型
+#type函数允许动态创建类
+
+#metaclass
+https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014319106919344c4ef8b1e04c48778bb45796e0335839000
 
 
 
