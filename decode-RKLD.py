@@ -956,9 +956,10 @@ class SwimmedMixIn(object):
 #故可以给类名添加MixIn
 class Dog(Animal , MammalMixIn , SwimmedMixIn):
     pass
+
      
-#定制类     
-https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014319098638265527beb24f7840aa97de564ccc7f20f6000  
+#定制类 内容较多     
+#https://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/0014319098638265527beb24f7840aa97de564ccc7f20f6000
 class Student(object):
     def __init__(self , name):
         self.name = name
@@ -966,8 +967,145 @@ class Student(object):
 print(Student('feifei')) #打印的是一个地址信息
 
 class Student(object):
+    def __init__(self , name):
+        self.name = name
     
+    def __str__(self):
+        return 'Student object (name:%s)' % self.name
+
+#下面打印时 会去调用__str__函数
+print(Student('feifei')) #'Student object (name:feifei)'
      
+#但是尽管类中实现了__str__函数
+#直接显示变量
+s=Student('feifei')
+s #这种调用方式 打印的还是地址信息 这种方式调用的类中的__repr__函数
+
+#__str__是给用户看的
+#__repr__是给程序开发者看的 
+#但通常两者的代码是一样的
+#下面是偷懒写法
+class Student(object):
+    def __init__(self , name):
+        self.name = name
+    
+    def __str__(self):
+        return 'Student object (name:%s)' % self.name
+    
+    __repr__ = __str__
+
+
+
+#一个类想被用于for in循环 类似list或tuple那样
+#需要实现__iter__方法和__next__方法
+class Fib(object):
+    def __init__(self):
+        self.a , self.b = 0 , 1
+    
+    def __iter__(self):
+        return self #实例本身即迭代对象 所以返回自己
+
+    def __next__(self):
+        self.a , self.b = self.b , self.a+self.b
+        
+        if self.a>100000: #终止循环
+            raise StopIteration()
+        
+        return self.a
+
+#for循环不断调用迭代对象的__next__方法
+#可以打印斐波那契数列了
+for n in Fib():
+    print(n)
+
+#上面的Fib类实例可以用于for循环 和list有点像 但是不能像list那样按照下标取出元素
+#使用下标取出元素 需要实现__getitem__方法
+class Fib(object):
+    def __getitem__(self , n):
+        a,b = 1, 1
+        
+        for x in range(n):
+            a,b = b,a+b
+        
+        return a
+
+f=Fib()
+#可以使用下标访问了
+f[0]
+f[1]
+f[2]
+
+#list支持切片操作
+#上面Fib类实例还是不支持
+#要在__getitem__中对参数n进行判断 是否为切片对象 slice
+
+class Fib(object):
+    def __getitem__(self , n):
+        if isinstance(n , int):
+            a,b = 1, 1
+        
+            for x in range(n):
+                a,b = b,a+b
+            
+            return a
+        
+        if isinstance(n , slice):
+            start = n.start
+            stop = n.stop
+            #如果要补全功能 还要对n.step参数进行处理
+            
+            if start is None: #[:5] 这种情况就是start为none 
+                start = 0
+            #还需要补充stop为none的情况 即[5:] stop为none
+            
+            a,b = 1,1
+            L = []
+            
+            for x in range(stop):
+                if x>=start:
+                    L.append(a)
+                
+                a,b = b,a+b
+            
+            return L
+
+f = Fib()
+f[0:5]
+
+f[:5]
+
+
+
+#如果将类实例看作dict 则__getitem__参数就可以是key 例如str
+
+#__setitem__方法可以将对象当做list或dict对其赋值
+#__delitem__删除元素
+
+
+class Student(object):
+    def __init__(self):
+        self.name = 'feifei'
+        
+s = Student()
+print(s.name)
+
+print(s.score) #没有这个属性 引发错误 attributeerror
+
+
+#__getattr__方法 动态返回一个属性或者函数
+class Student(object):
+    def __init__(self):
+        self.name = 'feifei'
+        
+    def __getattr__(self , attr):
+        if attr == 'score': #动态返回属性
+            return 99
+        
+        if attr == 'age': #动态返回函数
+            return lambda: 52
+    
+print(s.score)
+s.age()
 
 
 
@@ -976,5 +1114,4 @@ class Student(object):
 
 
 
-     
 
